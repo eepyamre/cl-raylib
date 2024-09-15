@@ -843,15 +843,23 @@
   (color (:struct %color))
   (value :float))
 
+(defstruct material-map
+  texture color value)
+
+
+(defun set-material-map-texture (pointer new-texture)
+  (with-foreign-slots ((texture color value) pointer (:struct %material-map))
+		(setf texture (cffi:convert-to-foreign new-texture '(:struct %texture)))))
+
 (define-conversion-into-foreign-memory (object (type material-map-type) pointer)
     (with-foreign-slots ((texture (:pointer color) value) pointer (:struct %material-map))
-      (setf texture (nth 0 object))
-      (translate-into-foreign-memory (nth 1 object) '(:struct %color) color)
-      (setf value (coerce (nth 2 object) 'float))))
+      (setf texture (material-map-texture object))
+      (translate-into-foreign-memory (material-map-color object) '(:struct %color) color)
+      (setf value (coerce (material-map-value object) 'float))))
 
 (define-conversion-from-foreign (pointer (type material-map-type))
     (with-foreign-slots ((texture color value) pointer (:struct %material-map))
-      (list texture color value)))
+      (make-material-map :texture texture :color color :value value)))
 ;;
 ;;// Material, includes shader and maps
 ;;typedef struct Material {
@@ -865,15 +873,21 @@
   (maps (:pointer (:struct %material-map)))
   (params (:pointer :float)))
 
+(defstruct material 
+  shader maps params)
+
 (define-conversion-into-foreign-memory (object (type material-type) pointer)
     (with-foreign-slots ((shader maps params) pointer (:struct %material))
-      (setf shader (nth 0 object))
-      (setf maps (nth 1 object))
-      (setf params (nth 2 object))))
+      (setf shader (material-shader object))
+      (setf maps (material-maps object))
+      (setf params (material-params object))))
 
 (define-conversion-from-foreign (pointer (type material-type))
     (with-foreign-slots ((shader maps params) pointer (:struct %material))
-      (list shader maps params)))
+      (make-material 
+        :shader shader 
+        :maps maps 
+        :params params)))
 
 ;;
 ;;// Transform, vertex transformation data
@@ -946,21 +960,33 @@
   (bones (:pointer (:struct %bone-info)))
   (bind-pose (:pointer (:struct %transform))))
 
+(defstruct model
+  transform mesh-count material-count meshes materials mesh-material bone-count bones bind-pose)
+
 (define-conversion-into-foreign-memory (object (type model-type) pointer)
     (with-foreign-slots ((transform mesh-count material-count meshes materials mesh-material bone-count bones bind-pose) pointer (:struct %model))
-      (setf transform (cffi:convert-to-foreign (nth 0 object) '(:struct %matrix)))
-      (setf mesh-count (nth 1 object))
-      (setf material-count (nth 2 object))
-      (setf meshes (nth 3 object))
-      (setf materials (nth 4 object))
-      (setf mesh-material (nth 5 object))
-      (setf bone-count (nth 6 object))
-      (setf bones (nth 7 object))
-      (setf bind-pose (nth 8 object))))
+      (setf transform (cffi:convert-to-foreign (model-transform object) '(:struct %matrix)))
+      (setf mesh-count (model-mesh-count object))
+      (setf material-count (model-material-count object))
+      (setf meshes (model-meshes object))
+      (setf materials (model-materials object))
+      (setf mesh-material (model-mesh-material object))
+      (setf bone-count (model-bone-count object))
+      (setf bones (model-bones object))
+      (setf bind-pose (model-bind-pose object))))
 
 (define-conversion-from-foreign (pointer (type model-type))
     (with-foreign-slots ((transform mesh-count material-count meshes materials mesh-material bone-count bones bind-pose) pointer (:struct %model))
-      (list transform mesh-count material-count meshes materials mesh-material bone-count bones bind-pose)))
+      (make-model 
+        :transform transform 
+        :mesh-count mesh-count 
+        :material-count material-count 
+        :meshes meshes 
+        :materials materials 
+        :mesh-material mesh-material 
+        :bone-count bone-count 
+        :bones bones 
+        :bind-pose bind-pose)))
 ;;
 ;;// ModelAnimation
 ;;typedef struct ModelAnimation {

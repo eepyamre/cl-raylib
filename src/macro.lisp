@@ -49,3 +49,13 @@
   `(let ((,sound (load-sound ,file-name)))
      (unwind-protect (progn ,@body)
        (unload-sound ,sound))))
+
+(defmacro with-material ((var pointer) &body body)
+  `(with-foreign-slots ((shader maps params) ,pointer (:struct %material))
+      (let ((,var (make-material
+                   :shader shader
+                   :maps maps
+                   :params params)))
+       	(prog1
+           (progn ,@body))
+				)))

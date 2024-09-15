@@ -80,6 +80,29 @@
    #:camera2d-rotation
    #:camera2d-zoom
 
+   #:make-model
+   #:model-transform 
+   #:model-mesh-count 
+   #:model-material-count 
+   #:model-meshes 
+   #:model-materials 
+   #:model-mesh-material 
+   #:model-bone-count 
+   #:model-bones 
+   #:model-bind-pose
+
+   #:make-material-map
+   #:material-map-texture 
+   #:material-map-color 
+   #:material-map-value
+   #:set-material-map-texture
+
+   #:make-material
+   #:material-shader
+   #:material-maps
+   #:material-params
+   #:with-material
+
    #:init-window
    #:window-should-close
    #:close-window
