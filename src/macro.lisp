@@ -56,6 +56,4 @@
                    :shader shader
                    :maps maps
                    :params params)))
-       	(prog1
-           (progn ,@body))
-				)))
+       	,@body)))
