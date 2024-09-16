@@ -1007,8 +1007,8 @@
 (defstruct model-animation 
   bone-count frame-count bones frame-poses name)
 
-(defun model-animation-deref (ptr) 
-  (cffi:mem-ref ptr '(:struct %model-animation)))
+(defun model-animation-deref (ptr &optional (offset 0))
+  (cffi:mem-aref ptr '(:struct %model-animation) offset))
 
 (define-conversion-into-foreign-memory (object (type model-animation-type) pointer)
     (with-foreign-slots ((bone-count frame-count bones frame-poses name) pointer (:struct %model-animation))
