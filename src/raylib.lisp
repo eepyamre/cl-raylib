@@ -846,7 +846,7 @@
 (defstruct material-map
   texture color value)
 
-
+; TODO: Create macro aroutd (defcfun "SetMaterialTexture" ...)
 (defun set-material-map-texture (pointer new-texture)
   (with-foreign-slots ((texture color value) pointer (:struct %material-map))
 		(setf texture (cffi:convert-to-foreign new-texture '(:struct %texture)))))
@@ -920,7 +920,7 @@
 ;;} BoneInfo;
 (defcstruct (%bone-info :class bone-info-type)
   "Bone information"
-  (name :string)
+  (name :char :count 32)
   (parent :int))
 
 (define-conversion-into-foreign-memory (object (type bone-info-type) pointer)
@@ -1004,17 +1004,23 @@
   (frame-poses (:pointer))
   (name :char :count 32))
 
+(defstruct model-animation 
+  bone-count frame-count bones frame-poses name)
+
+(defun model-animation-deref (ptr) 
+  (cffi:mem-ref ptr '(:struct %model-animation)))
+
 (define-conversion-into-foreign-memory (object (type model-animation-type) pointer)
     (with-foreign-slots ((bone-count frame-count bones frame-poses name) pointer (:struct %model-animation))
-      (setf bone-count (nth 0 object))
-      (setf frame-count (nth 1 object))
-      (setf bones (nth 2 object))
-      (setf frame-poses (nth 3 object))
-      (setf name (nth 4 object))))
+      (setf bone-count (model-animation-bone-count object))
+      (setf frame-count (model-animation-frame-count object))
+      (setf bones (model-animation-bones object))
+      (setf frame-poses (model-animation-frame-poses object))
+      (cffi:lisp-string-to-foreign (cffi:foreign-string-to-lisp (model-animation-name object)) name 32))) ;; IDK why so
 
 (define-conversion-from-foreign (pointer (type model-animation-type))
     (with-foreign-slots ((bone-count frame-count bones frame-poses name) pointer (:struct %model-animation))
-      (list bone-count frame-count bones frame-poses name)))
+      (make-model-animation :bone-count bone-count :frame-count frame-count :bones bones :frame-poses frame-poses :name name)))
 
 ;;
 ;;// Ray, ray for raycasting
@@ -5131,7 +5137,7 @@
 ;;
 ;;// Model animations loading/unloading functions
 ;;RLAPI ModelAnimation *LoadModelAnimations(const char *fileName, int *animCount);            // Load model animations from file
-(defcfun "LoadModelAnimations" (:struct %model-animation)
+(defcfun ("LoadModelAnimations") (:pointer (:struct %model-animation))
   "Load model animations from file"
   (file-name :string)
   (animation-count (:pointer :int)))

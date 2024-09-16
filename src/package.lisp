@@ -91,6 +91,14 @@
    #:model-bones 
    #:model-bind-pose
 
+   #:make-model-animation
+   #:model-animation-bone-count
+   #:model-animation-frame-count
+   #:model-animation-bones
+   #:model-animation-frame-poses
+   #:model-animation-name
+   #:model-animation-deref
+   
    #:make-material-map
    #:material-map-texture 
    #:material-map-color 
