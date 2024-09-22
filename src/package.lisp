@@ -104,6 +104,7 @@
    #:material-map-color 
    #:material-map-value
    #:set-material-map-texture
+   #:set-material-shader
 
    #:make-material
    #:material-shader
@@ -910,3 +911,10 @@
    #:set-matrix-view-offset-stereo
    #:load-draw-cube
    #:load-draw-quad))
+
+
+(defpackage #:cl-raymath
+  (:nicknames #:raymath)
+  (:use #:cl #:cffi #:alexandria #:cl-raylib-util)
+  (:export
+   #:matrix-multiply))

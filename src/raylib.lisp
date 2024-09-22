@@ -889,6 +889,10 @@
         :maps maps 
         :params params)))
 
+(defun set-material-shader (pointer new-shader)
+  (with-foreign-slots ((shader maps params) pointer (:struct %material))
+		(setf shader (cffi:convert-to-foreign new-shader '(:struct %shader)))))
+
 ;;
 ;;// Transform, vertex transformation data
 ;;typedef struct Transform {

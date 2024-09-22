@@ -1364,11 +1364,9 @@
 
 ;;
 ;;// Framebuffer management (fbo)
-;;RLAPI unsigned int rlLoadFramebuffer(int width, int height);              // Load an empty framebuffer
+;;RLAPI unsigned int rlLoadFramebuffer(void);                               // Load an empty framebuffer
 (defcfun ("rlLoadFramebuffer" load-framebuffer) :unsigned-int
-  "Load an empty framebuffer"
-  (width :int)
-  (height :int))
+  "Load an empty framebuffer")
 
 ;;RLAPI void rlFramebufferAttach(unsigned int fboId, unsigned int texId, int attachType, int texType, int mipLevel);  // Attach texture/renderbuffer to a framebuffer
 (defcfun ("rlFramebufferAttach" framebuffer-attach) :void
