@@ -1085,8 +1085,8 @@
 
 (define-conversion-into-foreign-memory (object (type bounding-box-type) pointer)
     (with-foreign-slots ((min max) pointer (:struct %bounding-box))
-      (setf min (nth 0 object))
-      (setf max (nth 1 object))))
+      (setf min (cffi:convert-to-foreign (nth 0 object) '(:struct %vector3)))
+      (setf max (cffi:convert-to-foreign (nth 1 object) '(:struct %vector3)))))
 
 (define-conversion-from-foreign (pointer (type bounding-box-type))
     (with-foreign-slots ((min max) pointer (:struct %bounding-box))
